@@ -23,6 +23,7 @@ var directions = {
 func _process(delta):
 	
 	for i in $directions.get_children():
+		#activates if player enters visibility zone
 		if Global.chased:
 			i.get_node("text").text = str(i.cast_to.dot(-get_node("../attract").global_position.direction_to(global_position)/8 )+1)
 			i.get_node("pr").value = i.cast_to.dot(-get_node("../attract").global_position.direction_to(global_position)/8 )+1
@@ -30,6 +31,7 @@ func _process(delta):
 			i.get_node("text").text = "0"
 			i.get_node("pr").value = 0
 		
+	#adds direction powers to the dictionary
 	for i in $directions.get_children():
 		directions[i.name] = i.get_node("pr").value
 	
@@ -48,7 +50,7 @@ func _process(delta):
 			velocity = find_node(str(dict_find(directions,directions.values().max()))).cast_to/8
 		else: 
 			velocity = find_node(str(directions.keys()[-2])).cast_to/8
-			print(directions.keys()[-2])
+			print(directions.keys[-2])
 	else: velocity = Vector2.ZERO
 	move_and_slide(velocity*speed, Vector2.UP)
 	
