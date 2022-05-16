@@ -9,8 +9,6 @@ var selected = false
 func _process(delta):
 	if selected:
 		global_position = lerp(global_position, get_global_mouse_position(), 1)
-		$Icon.global_position = get_global_mouse_position()
-		$CollisionShape2D.global_position = get_global_mouse_position()
 #		look_at(get_global_mouse_position())
 	
 
