@@ -1,61 +1,78 @@
 extends KinematicBody2D
 
-export var fear = [] 
-
-var speed = 50
 
 var velocity = Vector2.ZERO
-var directions = {
-	"up": 0,
-	"up_right1":1,
-	"up_right2":2,
-	"right":3,
-	"down":4,
-	"down_right1":5,
-	"down_right2":6,
-	"up_left1":7,
-	"up_left2":8,
-	"left":9,
-	"down_left1":10,
-	"down_left2":11
-}
+var direction = Vector2.ZERO
+
+var mouse_vector = Vector2.ZERO
+
+var MAX_SPEED = 110
+var ACCELERATION = 30
+
+onready var AnimTree = $AnimationTree
+onready var animNode = AnimTree.get("parameters/playback")
+
+
+onready var bullet_1 = preload("res://Bullet.tscn")
+
+
+func _ready():
+	Global.Player = self
+
 
 func _process(delta):
+	controls()
+	animation()
+	#areas that repulse the enemy
+	$repulsion_node.look_at(get_global_mouse_position())
 	
-	for i in $directions.get_children():
-		#activates if player enters visibility zone
-		if Global.chased:
-			i.get_node("text").text = str(i.cast_to.dot(-get_node("../attract").global_position.direction_to(global_position)/8 )+1)
-			i.get_node("pr").value = i.cast_to.dot(-get_node("../attract").global_position.direction_to(global_position)/8 )+1
-		else:
-			i.get_node("text").text = "0"
-			i.get_node("pr").value = 0
+	#gets mouse direction relative to the player
+	mouse_vector = Vector2(sign(get_global_mouse_position().x-global_position.x),sign(get_global_mouse_position().y-global_position.y))
+
+
+func controls():
+	#get input direction
+	direction.x = Input.get_action_strength("right")- Input.get_action_strength("left")
+	direction.y = Input.get_action_strength("down")- Input.get_action_strength("up")
+	
+	#normalize the direction
+	direction = direction.normalized()
+	
+	#if any key is pressed accelerate
+	if direction != Vector2.ZERO:
+		velocity += direction * ACCELERATION
+		#max speed
+		velocity = velocity.clamped(MAX_SPEED)
 		
-	#adds direction powers to the dictionary
-	for i in $directions.get_children():
-		directions[i.name] = i.get_node("pr").value
+	else:
+		#interpolates velocity to 0 aka deceleration
+		velocity = velocity.linear_interpolate(Vector2.ZERO, 0.15)
 	
-	if !$visibility_box.get_overlapping_areas():
-		Global.chased = false
-	else: Global.chased = true
+	move_and_slide(velocity, Vector2.UP)
 	
-	if !$fear_box.get_overlapping_areas():
-		Global.fear = false
-	else: Global.fear = true
-	#print(str(directions.values().max()))
-	
-		
-	if Global.chased:
-		if !Global.fear:
-			velocity = find_node(str(dict_find(directions,directions.values().max()))).cast_to/8
-		else: 
-			velocity = find_node(str(directions.keys()[-2])).cast_to/8
-			print(directions.keys[-2])
-	else: velocity = Vector2.ZERO
-	move_and_slide(velocity*speed, Vector2.UP)
-	
+	#if velocity is very small round it to 0
+	if abs(velocity.x) <0.2: velocity.x = 0
+	if abs(velocity.y)<0.2: velocity.y = 0
 	
 
-func dict_find(dict: Dictionary, value):
-	var found = dict.values().find(value)
-	return dict.keys()[found] if found > -1 else false
+func animation():
+	AnimTree.set("parameters/idle/blend_position", mouse_vector)
+	AnimTree.set("parameters/walk/blend_position", mouse_vector)
+	
+	#flip sprite if mouse to the left of the player
+	if mouse_vector.x == -1:
+		$Player.flip_h = true
+	else: $Player.flip_h = false
+	
+	if velocity != Vector2.ZERO:
+		animNode.travel("walk")
+		$footsteps.emitting = true
+	elif velocity == Vector2.ZERO:
+		animNode.travel("idle")
+		$footsteps.emitting = false
+	
+
+func _shooting():
+	pass
+
+
