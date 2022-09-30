@@ -35,6 +35,8 @@ func _process(delta):
 	if Input.is_action_just_pressed("right_click") and ammo > 0:
 		_shooting()
 	
+	Global.ammo = ammo
+	
 	
 	
 	if $Pickup_area.get_overlapping_bodies().size()>0:
@@ -66,14 +68,14 @@ func controls():
 		
 	else:
 		#interpolates velocity to 0 aka deceleration
-		velocity = velocity.linear_interpolate(Vector2.ZERO, 0.15)
+		velocity = velocity.linear_interpolate(Vector2.ZERO, 0.17)
 	
 	
 	move_and_slide(velocity, Vector2.UP)
 	
 	#if velocity is very small round it to 0
-	if abs(velocity.x) <0.2: velocity.x = 0
-	if abs(velocity.y)<0.2: velocity.y = 0
+	if abs(velocity.x) <1: velocity.x = 0
+	if abs(velocity.y)<1: velocity.y = 0
 	
 
 func animation():
@@ -92,7 +94,6 @@ func animation():
 		animNode.travel("idle")
 		$footsteps.emitting = false
 	
-	$sword/Area2D/Sword1.frame = 2-(ammo-1)
 
 func _shooting():
 	var bullet_inst = bullet_1.instance()

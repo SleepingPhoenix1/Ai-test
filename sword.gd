@@ -21,3 +21,17 @@ func _process(delta):
 	if sign(get_global_mouse_position().y-global_position.y) == -1:
 		get_parent().move_child(self, 0)
 	else: get_parent().move_child(self, 5)
+	
+	$Area2D/Sword1.frame = 2-(Global.ammo-1)
+	if Global.ammo == 3:
+		$Area2D/state_1.disabled = false
+		$Area2D/state_2.disabled = true
+		$Area2D/state_3.disabled = true
+	if Global.ammo == 2:
+		$Area2D/state_1.disabled = false
+		$Area2D/state_2.disabled = true
+		$Area2D/state_3.disabled = true
+	if Global.ammo == 1:
+		$Area2D/state_1.disabled = false
+		$Area2D/state_2.disabled = true
+		$Area2D/state_3.disabled = true

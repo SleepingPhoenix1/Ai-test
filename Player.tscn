@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://Player.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -220,7 +220,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.2 ),
 "transitions": PoolRealArray( 0.0563282, 0.0583146 ),
 "update": 0,
-"values": [ -55.0, 35.0 ]
+"values": [ 35.0, 125.0 ]
 }
 
 [sub_resource type="Animation" id=29]
@@ -236,8 +236,20 @@ tracks/0/keys = {
 "times": PoolRealArray( 0, 0.2 ),
 "transitions": PoolRealArray( 0.0563282, 0.0583146 ),
 "update": 0,
-"values": [ 35.0, -55.0 ]
+"values": [ 125.0, 35.0 ]
 }
+
+[sub_resource type="CapsuleShape2D" id=32]
+radius = 2.82582
+height = 15.976
+
+[sub_resource type="CapsuleShape2D" id=33]
+radius = 2.82582
+height = 13.1906
+
+[sub_resource type="CapsuleShape2D" id=34]
+radius = 2.82582
+height = 10.4051
 
 [sub_resource type="ParticlesMaterial" id=30]
 emission_shape = 2
@@ -293,11 +305,12 @@ __meta__ = {
 [node name="Player" type="Sprite" parent="."]
 light_mask = 0
 position = Vector2( 0, 8 )
-scale = Vector2( 1, 0.7 )
+scale = Vector2( 1, 0.971325 )
 texture = ExtResource( 3 )
 offset = Vector2( 0, -8 )
 hframes = 6
 vframes = 6
+frame = 1
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 anims/RESET = SubResource( 4 )
@@ -319,13 +332,11 @@ script = ExtResource( 5 )
 
 [node name="Area2D" type="Area2D" parent="sword"]
 position = Vector2( 0, 4 )
-rotation = -0.959931
-__meta__ = {
-"_edit_group_": true
-}
+rotation = 2.18166
+collision_layer = 16
+collision_mask = 0
 
 [node name="Sword1" type="Sprite" parent="sword/Area2D"]
-rotation = 1.8326
 texture = ExtResource( 4 )
 hframes = 4
 
@@ -334,12 +345,29 @@ anims/RESET = SubResource( 27 )
 anims/sword_swing = SubResource( 28 )
 anims/sword_swing_back = SubResource( 29 )
 
+[node name="state_4" type="CollisionShape2D" parent="sword/Area2D"]
+position = Vector2( 0.326301, -9.99468 )
+shape = SubResource( 32 )
+
+[node name="state_2" type="CollisionShape2D" parent="sword/Area2D"]
+position = Vector2( 0.0807238, -8.60195 )
+shape = SubResource( 33 )
+disabled = true
+
+[node name="state_3" type="CollisionShape2D" parent="sword/Area2D"]
+position = Vector2( -0.164851, -7.20922 )
+shape = SubResource( 34 )
+disabled = true
+
 [node name="Light2D" type="Light2D" parent="."]
 texture = ExtResource( 6 )
 texture_scale = 0.8
 color = Color( 0.85098, 0.737255, 0.352941, 1 )
 energy = 0.8
 shadow_enabled = true
+__meta__ = {
+"_edit_lock_": true
+}
 
 [node name="footsteps" type="Particles2D" parent="."]
 position = Vector2( 0, 7 )
@@ -350,6 +378,7 @@ local_coords = false
 process_material = SubResource( 30 )
 
 [node name="Pickup_area" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 16
 monitorable = false
